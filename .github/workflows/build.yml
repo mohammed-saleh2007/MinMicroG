@@ -33,10 +33,10 @@ jobs:
               ls ./releases              
 
 
-     # Upload Artifact
-     - name: Upload production-ready releases files
-     uses: actions/upload-artifact@v3
-       with:
+      # Upload Artifact
+      - name: Upload production-ready releases files
+      uses: actions/upload-artifact@v3
+      with:
           name: production
           path: ./releases
 
