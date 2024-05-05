@@ -34,24 +34,22 @@ jobs:
 
 
       # Upload Artifact
-      - name: Upload production-ready releases files
+      - name: Upload for downlaoding
         uses: actions/upload-artifact@v3
         with:
           name: production
           path: ./releases
 
-      
-      - name: Upload generated file as release asset
-        uses: JamesIves/github-pages-deploy-action@4.1.2
+      - name: Upload as release
+        uses: xresloader/upload-to-github-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          build_repo: ${{ github.repository }}
-          file: ./releases/*.zip
-          token: ${{ secrets.GITHUB_TOKEN }}
-          repo_token: ${{ secrets.Forked_REPO_TOKEN }}
-          repo: ${{ github.repository }}
-          asset_path: ./releases/*.zip
-          tag: stable
-
+          file: "./releases/*.zip"
+          tags: true
+          draft: true
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          default_release_name: "MinMicroG flashable ZIPs"
 
           
               
