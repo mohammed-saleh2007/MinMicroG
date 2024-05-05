@@ -1,36 +1,45 @@
+name: Build Blog JSON
 
+on:
+  push:
+    paths:
+      - 'blog-posts/**/*.md'
 
-# ...
-  release_assets:
-    name: Release assets
-    needs: create_release # we need to know the upload URL
-    runs-on: ${{ matrix.config.os }} # we run many different builds
-    strategy:
-      # just an example matrix
-      matrix:
-        config:
-          - os: ubuntu-latest
-          - os: macos-latest
-          - os: windows-latest
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
     steps:
-      # checkout of cource
-      - name: Checkout code
-        uses: actions/checkout@v1
-      # ... whatever build and packaging steps you need here
-      # and finally do an upload!
-      - name: Upload release assets
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create_release.outputs.upload_url }}
-          # This is how it will be named on the release page. Put hatever name
-          # you like, remember that they need to be different for each platform.
-          # You can choose any build matrix parameters. For Rust I use the
-          # target triple.
-          asset_name: program-name-${{ matrix.config.os }}
-          # The path to the file you want to upload.
-          asset_path: ./releases
-          # probably you will need to change it, but most likely you are
-          # uploading a binary file
-          asset_content_type: application/octet-stream
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Get list of Markdown files
+      run: |
+        cd blog-posts
+        files=($(ls *.md))
+        json_array=()
+        for file in "${files[@]}"
+        do
+          date_string=$(grep -E '^date: ' "$file" | cut -d' ' -f2)
+          # Use the date command to extract the year, month, and date
+          year=$(date -d "$date_string" +%Y)
+          month=$(date -d "$date_string" +%m)
+          day=$(date -d "$date_string" +%d)
+          json_array+=($(echo "{\"file\":\"$file\",\"date\":\"$date_string\",\"year\":\"$year\",\"month\":\"$month\",\"day\":\"$day\"}"))
+        done
+        echo "[$(IFS=,; echo "${json_array[*]}" | jq -s -c 'sort_by(.date)')]" > ../static/blog.json
+        
+    - name: Remove trailing comma
+      run: |
+        sed -i '$ s/,$//' static/blog.json
+        
+    - name: Commit changes
+      run: |
+        git config --global user.email "no-reply@github.com"
+        git config --global user.name "GitHub Actions"
+        git add static/blog.json
+        git commit -m "Update blog.json"
+        git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+        git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
