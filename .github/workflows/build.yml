@@ -43,10 +43,12 @@ jobs:
       - name: Upload generated file as release asset
         uses: JamesIves/github-pages-deploy-action@4.1.2
         with:
-          build_repo: ${{ github.repository }}
-          file: ./releases
+          file: ./releases/*.zip
           token: ${{ secrets.GITHUB_TOKEN }}
-          repo_token: ${{ secrets.Forked_REPO_TOKEN }}
+          repo: ${{ github.repository }}
+          asset_path: ./releases/*.zip
+          tag: stable
+          
               
 
 
