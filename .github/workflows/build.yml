@@ -35,10 +35,11 @@ jobs:
 
       # Upload Artifact
       - name: Upload production-ready releases files
-      uses: actions/upload-artifact@v3
-      with:
+        uses: actions/upload-artifact@v3
+        with:
           name: production
           path: ./releases
+              retention-days: 2
 
 
 
