@@ -33,3 +33,6 @@ jobs:
       - name: Run a multi-line script
         run: |
               ls ./releases
+              apt install github-cli
+              apt install gh
+              gh run download --run-id $GITHUB_RUN_ID --artifact *.zip         
