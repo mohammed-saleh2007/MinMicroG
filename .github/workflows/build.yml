@@ -40,12 +40,12 @@ jobs:
           name: production
           path: ./releases
 
-      - name: Upload generated file as release asset
-        uses: JamesIves/github-pages-deploy-action@4.1.2
-        with:
-          build_repo: ${{ github.repository }}
-          file: ./releases
-          token: ${{ secrets.GITHUB_TOKEN }}
+    #  - name: Upload generated file as release asset
+    #    uses: JamesIves/github-pages-deploy-action@4.1.2
+    #    with:
+    #      build_repo: ${{ github.repository }}
+    #      file: ./releases
+    #      token: ${{ secrets.GITHUB_TOKEN }}
               
 
 
